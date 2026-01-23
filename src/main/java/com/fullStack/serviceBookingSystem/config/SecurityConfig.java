@@ -26,19 +26,30 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
+        http.cors().and().csrf().disable()
+                .authorizeHttpRequests()
                 .requestMatchers(
-                        "/authenticate", "/client/signup", "getAd/{id}"
-                        , "/company/signup", "/adds", "create_adds/{id}",
-                        "getAddsByCompanyId/{id}", "deleteAdd/{id}",
-                        "getReservationsByCompanyId/{id}",
-                        "company_action/{id}",
-                        "getReservationsByClientId/{id}",
-                        "getUserById/{id}","bookAd",
-                        "deleteReservationById/{id}",
-                        "getReservation/{id}"
+                        "/authenticate",
+                        "/client/signup",
+                        "/company/signup",
+                        "/adds",
+                        "/create_adds/*",
+                        "/getAd/*",
+                        "/getAddsByCompanyId/*",
+                        "/deleteAdd/*",
+                        "/getReservationsByCompanyId/*",
+                        "/company_action/*",
+                        "/getReservationsByClientId/*",
+                        "/getUserById/*",
+                        "/bookAd",
+                        "/deleteReservationById/*",
+                        "/getReservation/*"
                 ).permitAll()
                 .anyRequest().authenticated();
+
+        // Add JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtRequestFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -51,5 +62,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }
